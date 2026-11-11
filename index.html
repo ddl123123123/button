@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>钮扣索引</title>
+<link rel="stylesheet" href="style.css?v=3">
+</head>
+<body class="is-browse">
+
+<header class="nav">
+  <a class="brand" href="#/">钮扣索引</a>
+  <nav aria-label="视图">
+    <a href="#/" data-nav="browse">图像</a>
+    <a href="#/graph" data-nav="graph">词语</a>
+  </nav>
+  <div class="search">
+    <input id="q" type="search" placeholder="检索词语或钮扣" autocomplete="off" aria-label="检索词语或钮扣">
+    <ul id="results" hidden></ul>
+  </div>
+</header>
+
+<main id="browse" aria-label="图像浏览">
+  <div class="info" id="info"></div>
+  <div class="count" id="count" aria-hidden="true"></div>
+  <div class="stage" id="stage"></div>
+  <div class="ticks" id="ticks"><span id="tick-now"></span><i><b id="tick-bar"></b></i><span id="tick-all"></span></div>
+  <p class="hint">滚动或拖动来翻看，点一枚钮扣进入它的词语网</p>
+</main>
+
+<main id="graph" aria-label="词语网">
+  <svg id="net" role="img" aria-label="钮扣与词语的关系网">
+    <g id="cam"><g id="links"></g><g id="nodes"></g></g>
+  </svg>
+  <ul class="legend" id="legend" aria-label="词语类别"></ul>
+  <p class="net-hint">拖动平移，滚轮缩放，点空白处取消选中</p>
+  <section class="panel" id="panel"></section>
+</main>
+
+<div id="tip" role="tooltip" hidden></div>
+
+<script src="data.js?v=3"></script>
+<script src="buttons.js?v=3"></script>
+<script src="app.js?v=3"></script>
+</body>
+</html>
