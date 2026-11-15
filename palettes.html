@@ -75,7 +75,7 @@
 
 <header class="top">
   <h1>钮扣索引的配色方案</h1>
-  <p>每套都用同样三枚钮扣（黄铜、贝母、墨黑玻璃）和同一组词语做小样：左边是图像视图，右边是词语视图。
+  <p>每套都用同样三枚钮扣（铜鹰扣、银漩涡扣、黑色二孔扣）和同一组词语做小样：左边是图像视图，右边是词语视图。
      钮扣自己的颜色不随方案变，变的是纸面、夜色、文字、连线和八类词语的颜色。看中哪一套，把字母告诉我。</p>
   <nav class="jump" id="jump" aria-label="方案"></nav>
 </header>
@@ -84,17 +84,16 @@
 
 <footer>小样只为比较颜色，尺寸和细节以网站本身为准。</footer>
 
-<script src="data.js?v=3"></script>
-<script src="buttons.js?v=3"></script>
-<script src="palettes.js?v=3"></script>
+<script src="data.js?v=6"></script>
+<script src="buttons.js?v=6"></script>
+<script src="palettes.js?v=6"></script>
 <script>
 (() => {
   const TYPES = window.TYPES, items = window.BUTTONS;
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  const art = i => { const it = items[i]; it.seed = (i + 1) * 7919; return ButtonArt.render(it, 360).lit; };
-  // 三枚最能考验配色的钮扣：黄铜（暖金属）、贝母（最容易和浅色纸面混在一起）、墨黑玻璃（最容易被夜色吞掉）
-  const IMG = { brass: art(0), pearl: art(6), jet: art(8) };
-  const jet = items[8];
+  // 小样里的三枚钮扣用的是真实照片；INFO 是左边信息栏显示的那一枚，jet 是词语视图中间那一枚
+  const IMG = { brass: 'images/copper-eagle.png', pearl: 'images/silver-swirl.png', jet: 'images/black-two-hole.png' };
+  const INFO = items[2 % items.length], jet = items[1 % items.length];
 
   const rgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
   const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
@@ -105,11 +104,11 @@
   function browseMock(p) {
     const rows = ['material', 'color', 'form', 'craft'].map(k => {
       const t = TYPES.find(x => x.key === k);
-      return `<div><span><i style="background:${p.categories[k]};border:1px solid ${rgba(p.ink, .3)}"></i>${t.label}</span><span>${esc(items[6].attrs[k])}</span></div>`;
+      return `<div><span><i style="background:${p.categories[k]};border:1px solid ${rgba(p.ink, .3)}"></i>${t.label}</span><span>${esc(INFO.attrs[k])}</span></div>`;
     }).join('');
     return `<div class="mock" style="background:${p.paper};color:${p.ink};--line:${rgba(p.ink, .17)}">
       <div class="m-nav"><strong>钮扣索引</strong><div><span class="on">图像</span><span>词语</span></div></div>
-      <div class="m-info"><small>No. ${items[6].no}</small><h3>${esc(items[6].name)}</h3>${rows}</div>
+      <div class="m-info"><small>No. ${INFO.no}</small><h3>${esc(INFO.name)}</h3>${rows}</div>
       <div class="m-btn" style="left:40%;top:70%;width:15%"><img src="${IMG.brass}" alt=""></div>
       <div class="m-btn" style="left:57%;top:66%;width:21%"><img src="${IMG.pearl}" alt=""></div>
       <div class="m-btn" style="left:82%;top:46%;width:31%"><img src="${IMG.jet}" alt=""></div>

@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>钮扣索引</title>
-<link rel="stylesheet" href="style.css?v=3">
+<title>扣见 钮扣索引</title>
+<link rel="stylesheet" href="style.css?v=6">
 </head>
-<body class="is-browse">
+<body class="is-home">
 
 <header class="nav">
-  <a class="brand" href="#/">钮扣索引</a>
+  <a class="brand" href="#/">扣见</a>
   <nav aria-label="视图">
-    <a href="#/" data-nav="browse">图像</a>
+    <a href="#/browse" data-nav="browse">图像</a>
     <a href="#/graph" data-nav="graph">词语</a>
   </nav>
   <div class="search">
@@ -20,12 +20,14 @@
   </div>
 </header>
 
-<main id="browse" aria-label="图像浏览">
+<main id="home" aria-label="扣见"></main>
+
+<main id="browse" aria-label="图像索引">
   <div class="info" id="info"></div>
   <div class="count" id="count" aria-hidden="true"></div>
   <div class="stage" id="stage"></div>
   <div class="ticks" id="ticks"><span id="tick-now"></span><i><b id="tick-bar"></b></i><span id="tick-all"></span></div>
-  <p class="hint">滚动或拖动来翻看，点一枚钮扣进入它的词语网</p>
+  <p class="hint">滚动或拖动来翻看，点一枚钮扣看它的详情</p>
 </main>
 
 <main id="graph" aria-label="词语网">
@@ -37,10 +39,13 @@
   <section class="panel" id="panel"></section>
 </main>
 
+<main id="detail" aria-label="钮扣详情"></main>
+
 <div id="tip" role="tooltip" hidden></div>
 
-<script src="data.js?v=3"></script>
-<script src="buttons.js?v=3"></script>
-<script src="app.js?v=3"></script>
+<script src="data.js?v=6"></script>
+<script src="buttons.js?v=6"></script>
+<script src="pixel.js?v=6"></script>
+<script src="app.js?v=6"></script>
 </body>
 </html>

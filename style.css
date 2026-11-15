@@ -31,7 +31,10 @@ a { color: inherit; text-decoration: none; }
 .nav {
   position: fixed; inset: 0 0 auto 0; z-index: 20; height: 52px; padding: 0 24px;
   display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  transition: opacity .4s ease;
 }
+body.is-home .nav { opacity: 0; visibility: hidden; pointer-events: none; }   /* 入口页自己就是导航 */
+body.is-detail .nav { background: linear-gradient(var(--bg) 72%, transparent); }   /* 详情页会滚动，顶栏垫一层底色 */
 .brand { font: 600 17px/1 var(--serif); letter-spacing: .08em; }
 .nav nav { display: flex; gap: 22px; font-size: 13px; }
 .nav nav a { padding: 4px 0; opacity: .45; border-bottom: 1px solid transparent; }
@@ -55,10 +58,13 @@ a { color: inherit; text-decoration: none; }
 #results small { margin-left: auto; opacity: .5; font-size: 11px; }
 #results .none { padding: 8px 10px; opacity: .6; }
 
-/* ---------- 两个视图的切换 ---------- */
-main { position: fixed; inset: 0; transition: opacity .6s ease, visibility 0s linear 0s; }
-body.is-graph #browse, body.is-browse #graph {
+/* ---------- 四个页面的切换：body 上的 is-* 决定哪一个显示 ---------- */
+main {
+  position: fixed; inset: 0;
   opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .45s ease, visibility 0s linear .45s;
+}
+body.is-home #home, body.is-browse #browse, body.is-graph #graph, body.is-detail #detail {
+  opacity: 1; visibility: visible; pointer-events: auto; transition: opacity .6s ease, visibility 0s linear 0s;
 }
 
 /* ---------- 图像浏览 ---------- */
@@ -157,7 +163,7 @@ body.intro .info, body.intro .ticks, body.intro .hint { opacity: 0; }
 .chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
 .chips a { display: block; font: 500 13px/1.35 var(--mono); padding: 2px 8px 3px; border-radius: 5px; background: var(--c); color: var(--node-ink); }
 .chips a:hover, .chips a.hl { outline: 1px solid var(--night-ink); outline-offset: 2px; }
-.back { display: inline-block; margin-top: 14px; opacity: .6; border-bottom: 1px solid var(--line); }
+.back { display: inline-block; margin: 14px 16px 0 0; opacity: .6; border-bottom: 1px solid var(--line); }
 .back:hover { opacity: 1; }
 .p-rel { min-width: 0; display: flex; flex-direction: column; }
 .p-rel h3 { font: 400 12px var(--sans); opacity: .55; margin-bottom: 8px; }
@@ -167,6 +173,156 @@ body.intro .info, body.intro .ticks, body.intro .hint { opacity: 0; }
 .row a:hover, .row a.hl { transform: scale(1.08) rotate(8deg); }
 .row img { width: 100%; height: 100%; display: block; }
 .row span { position: absolute; right: -4px; top: -2px; font: 11px var(--mono); background: var(--night-ink); color: var(--node-ink); border-radius: 9px; padding: 0 5px; }
+
+/* ---------- 入口页 ----------
+   .home-stage 是一块固定比例的画布，里面的东西都用它的宽高（cqw / cqh）来定位，
+   所以整幅构图跟着窗口等比缩放。横屏和竖屏各有一套位置。 */
+#home { display: grid; place-items: center; overflow: hidden; }
+.home-stage {
+  position: relative; container-type: size; color: #2A2C31;
+  width: min(100vw, calc(100vh * 1280 / 848)); aspect-ratio: 1280 / 848;
+}
+.home-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
+.home-lines.port { display: none; }
+.home-lines line { stroke: currentColor; stroke-width: 1; vector-effect: non-scaling-stroke; animation: line-in 2.2s ease both; }
+
+.slot { position: absolute; display: flex; align-items: flex-end; gap: 1.1cqw; }
+.px { display: block; height: 10.6cqh; width: auto; fill: currentColor; overflow: visible; }
+.px rect { animation: px-in .45s ease both; animation-delay: calc(var(--d) * .9s + .25s); }
+.slot-label { position: relative; font-size: max(11px, .95cqw); line-height: 1; white-space: nowrap; padding-bottom: .15em; }
+.slot-label b { font-weight: 400; margin: 0 .45em 0 .4em; }
+.slot-label.bare b { margin-left: 0; }           /* 大字后面没有接小字时，编号顶格 */
+.slot-label::after {                              /* 标签下面三个小蓝点 */
+  content: ""; position: absolute; left: 0; top: calc(100% + 1.3cqh); width: 15px; height: 3px;
+  background: repeating-linear-gradient(90deg, #6585F5 0 3px, transparent 3px 6px);
+}
+.slot.hot .slot-label { text-decoration: underline; text-underline-offset: .35em; }
+.slot-a { left: 17.8cqw; top: 23.6cqh; }
+.slot-b { left: 74.2cqw; top: 46.6cqh; }
+.slot-c { left: 53.9cqw; top: 74.3cqh; }
+.slot-c .px { height: 9.4cqh; }
+
+.obj { position: absolute; aspect-ratio: 1; animation: obj-in .9s ease .5s both; }
+.obj img { display: block; width: 100%; height: 100%; filter: drop-shadow(.5cqw .9cqw .9cqw rgba(30, 24, 14, .28)); transition: transform .6s cubic-bezier(.3, .7, .2, 1); }
+.obj-a { left: 20.1cqw; top: 38.9cqh; width: 15.6cqw; }
+.obj-b { left: 48.6cqw; top: 19.5cqh; width: 18.75cqw; }
+.obj-c { left: 36.7cqw; top: 77.2cqh; width: 11.7cqw; }
+.obj-a img { transform: perspective(60cqw) rotateY(26deg) rotate(-12deg); }
+.obj-b img { transform: perspective(60cqw) rotateY(-30deg) rotateX(8deg) rotate(24deg); }
+.obj-c img { transform: perspective(60cqw) rotateX(60deg); }
+.obj-a.hot img { transform: perspective(60cqw) rotateY(8deg) rotate(10deg); }
+.obj-b.hot img { transform: perspective(60cqw) rotateY(-10deg) rotateX(4deg) rotate(50deg); }
+.obj-c.hot img { transform: perspective(60cqw) rotateX(48deg) rotate(40deg); }
+.lens {                                           /* 压在钮扣上的半透明色片：细格子加一道横线 */
+  position: absolute; aspect-ratio: 1; background-color: color-mix(in srgb, var(--c) 66%, transparent);
+  background-image:
+    linear-gradient(var(--ln), var(--ln)),
+    linear-gradient(rgba(255, 255, 255, .22) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .22) 1px, transparent 1px);
+  background-size: 100% 2px, 5px 5px, 5px 5px; background-position: 0 50%, 0 0, 0 0; background-repeat: no-repeat, repeat, repeat;
+  transition: transform .5s cubic-bezier(.3, .7, .2, 1); animation: obj-in .7s ease 1s both;
+}
+.obj-a .lens { left: 18%; top: 20%; width: 54%; }
+.obj-b .lens { left: 20%; top: 37%; width: 46%; }
+.obj-c .lens { left: 52%; top: -4%; width: 73%; }
+.obj.hot .lens { transform: translate(7%, -7%); }
+
+@keyframes px-in { from { opacity: 0; } }
+@keyframes line-in { from { stroke-dasharray: 0 4; } to { stroke-dasharray: 4 0; } }   /* 结束时没有空隙，画布放大多少都是整条线 */
+@keyframes obj-in { from { opacity: 0; } }
+
+@media (max-aspect-ratio: 1/1) {
+  .home-stage { width: min(100vw, calc(100vh * 600 / 800)); aspect-ratio: 600 / 800; }
+  .home-lines.land { display: none; }
+  .home-lines.port { display: block; }
+  .px { height: 7.75cqh; }
+  .slot { gap: 2cqw; }
+  .slot-label { font-size: max(11px, 2cqw); }
+  .slot-a { left: 6.7cqw; top: 18.75cqh; }
+  .slot-b { left: min(66.7cqw, calc(85cqw - 7.2 * max(11px, 2cqw))); top: 50cqh; flex-direction: column; align-items: flex-start; gap: 1.6cqh; }
+  .slot-c { left: 50cqw; top: 76.5cqh; }
+  .slot-c .px { height: 8.75cqh; }
+  .obj-a { left: 10.8cqw; top: 33.1cqh; width: 28.3cqw; }
+  .obj-b { left: 49.2cqw; top: 21.9cqh; width: 31.7cqw; }
+  .obj-c { left: 20.8cqw; top: 74.5cqh; width: 21.7cqw; }
+}
+
+/* ---------- 钮扣详情 ---------- */
+#detail { overflow-y: auto; }
+.d-wrap {
+  min-height: 100%; padding: 86px 4.6vw 24px;
+  display: grid; grid-template-columns: minmax(300px, 31fr) minmax(170px, 18fr) minmax(300px, 34fr);
+  grid-template-rows: 1fr auto; gap: 0 5vw; align-items: start;
+}
+.d-text { position: relative; }
+.d-text h1 { font: 700 26px/1.3 var(--sans); letter-spacing: .01em; }
+.d-text h1 i, .d-keys i { font-style: normal; font-weight: 300; opacity: .55; }
+.d-keys { margin-top: 8px; font: 500 17px/1.75 var(--sans); max-width: 24em; }
+.d-keys span { white-space: nowrap; }
+.d-keys a:hover { text-decoration: underline; text-underline-offset: .3em; }
+.d-bits {                                         /* 标题旁的两个小方点 */
+  position: absolute; right: 4%; top: 88px; width: 14px; height: 14px;
+  background: linear-gradient(var(--c), var(--c)) 0 100% / 7px 7px no-repeat, linear-gradient(var(--c), var(--c)) 100% 0 / 7px 7px no-repeat;
+}
+.d-desc { margin-top: 22px; max-width: 32em; font-size: 13px; line-height: 2; text-align: justify; }
+.d-diagram { margin-top: 24px; max-width: 400px; }
+.dg { display: block; width: 100%; height: auto; overflow: visible; }
+.dg rect, .dg path { fill: none; stroke: currentColor; stroke-width: .9; vector-effect: non-scaling-stroke; }
+.dg text { font: 11px var(--sans); text-anchor: middle; dominant-baseline: central; fill: currentColor; }
+.dg .dg-cap { font-size: 9px; opacity: .55; }
+.dg .dg-title { font-size: 13.5px; font-weight: 600; }
+.dg .dg-word circle { stroke: rgba(17, 19, 23, .4); stroke-width: .6; }
+.dg a:hover rect, .dg a:focus-visible rect { fill: rgba(17, 19, 23, .08); }
+.dg a:hover .dg-word text:first-of-type, .dg a:focus-visible .dg-word text:first-of-type { text-decoration: underline; }
+.dg a { outline: none; }
+
+.d-hero { position: relative; aspect-ratio: 1; align-self: center; margin: 0 22% 9vh 0; }
+.d-hero > img { display: block; width: 100%; height: 100%; filter: drop-shadow(0 14px 16px rgba(30, 24, 14, .22)); }
+.d-lens {                                         /* 色片里是同一枚钮扣的马赛克：位置和上面那张对齐 */
+  position: absolute; left: 40%; top: 38%; width: 82%; aspect-ratio: 1; overflow: hidden;
+  background: color-mix(in srgb, var(--c) 78%, transparent);
+}
+.d-pix { position: absolute; left: -48.78%; top: -46.34%; width: 121.95%; image-rendering: pixelated; mix-blend-mode: multiply; opacity: .9; }
+.d-pix:not([src]) { visibility: hidden; }
+.d-lens::after {
+  content: ""; position: absolute; inset: 0;
+  background:
+    linear-gradient(rgba(255, 255, 255, .9), rgba(255, 255, 255, .9)) 0 50% / 100% 2px no-repeat,
+    linear-gradient(rgba(255, 255, 255, .2) 1px, transparent 1px) 0 0 / 5px 5px,
+    linear-gradient(90deg, rgba(255, 255, 255, .2) 1px, transparent 1px) 0 0 / 5px 5px;
+}
+
+.d-rel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3vh 1.6vw; align-content: start; }
+.rel { position: relative; display: block; aspect-ratio: 4 / 3; }
+.rel .card { position: absolute; inset: var(--i); background: rgba(17, 19, 23, .06); outline: 1px solid rgba(17, 19, 23, .12); }
+.rel img { position: absolute; left: var(--x); top: 12%; height: 76%; aspect-ratio: 1; filter: grayscale(1) contrast(.92); opacity: .9; transition: filter .3s, opacity .3s, transform .4s; }
+.rel .patch {
+  position: absolute; left: min(var(--px), calc(100% - 4.8em)); top: var(--py); width: max(40%, 4.8em); aspect-ratio: 5 / 4; padding: 5px 6px;
+  white-space: nowrap;
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 1px;
+  background: color-mix(in srgb, var(--c) 80%, transparent); color: var(--node-ink);
+  font: 500 12px/1.25 var(--sans); transition: transform .4s cubic-bezier(.3, .7, .2, 1);
+}
+.rel .patch small { font-size: 10px; font-weight: 400; opacity: .7; }
+.rel:hover img, .rel:focus-visible img { filter: none; opacity: 1; transform: rotate(14deg); }
+.rel:hover .patch, .rel:focus-visible .patch { transform: translate(6%, -8%); }
+.d-none { grid-column: 1 / -1; opacity: .6; }
+
+.d-pager { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 20px; margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--line); }
+.d-pager a { opacity: .65; }
+.d-pager a:hover { opacity: 1; }
+.d-pager span { margin-left: .8em; font-family: var(--mono); }
+
+@media (max-width: 960px) {
+  .d-wrap { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; padding: 76px 18px 24px; gap: 30px 0; }
+  .d-text h1 { font-size: 22px; }
+  .d-keys { font-size: 15px; }
+  .d-bits { display: none; }
+  .d-hero { width: 56%; margin: 0 0 16% 6%; align-self: start; }
+  .d-rel { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 14px; }
+  .d-pager { margin-top: 0; flex-wrap: wrap; }
+  .d-pager span { display: none; }
+}
 
 .fly { position: fixed; z-index: 50; pointer-events: none; }
 
@@ -199,5 +355,6 @@ body.intro .info, body.intro .ticks, body.intro .hint { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body, main, .n, .lk, .row a { transition: none !important; }
+  body, main, .n, .lk, .row a, .obj img, .lens, .rel img, .rel .patch { transition: none !important; }
+  .px rect, .home-lines line, .obj, .lens { animation: none !important; }
 }
